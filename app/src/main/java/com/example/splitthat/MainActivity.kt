@@ -1,5 +1,6 @@
 package com.example.splitthat
 
+import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.splitthat.data.DbContract
 import com.example.splitthat.data.DbHelper
 import com.example.splitthat.model.Expense
 import com.example.splitthat.ui.theme.SplitThatTheme
@@ -63,13 +65,31 @@ fun ExpenseItem(expenseName: String, cost: Double, modifier: Modifier) {
 
 @Composable
 fun ExpenseList(modifier: Modifier = Modifier) {
-    // TODO(1): read the below expenses from DB
-    val expenses = remember { mutableStateListOf(Expense("Donuts", 32.3),
-        Expense("Cranberries", 42.3)
-    ) }
-
     val dbHelper = DbHelper(context = LocalContext.current)
     val db = dbHelper.writableDatabase
+
+    val expensesCursor = db.query("expenses",
+        arrayOf("expense_name", "cost"),
+        null,
+        null,
+        null,
+        null,
+        null)
+
+    val dbExpenses = mutableListOf<Expense>()
+    with (expensesCursor) {
+        while (moveToNext()) {
+            val expense = Expense(
+                name = getString(getColumnIndexOrThrow("expense_name")),
+                cost = getDouble(getColumnIndexOrThrow("cost"))
+            )
+            dbExpenses.add(expense)
+        }
+    }
+
+    expensesCursor.close()
+
+    val expenses = remember { mutableStateListOf(*dbExpenses.toTypedArray()) }
 
     val inputExpenseName = remember { mutableStateOf("Expense name") }
     val inputExpenseCost = remember { mutableStateOf("42") }
@@ -88,7 +108,14 @@ fun ExpenseList(modifier: Modifier = Modifier) {
         Row (modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween) {
             // TODO(2): persist the below expense to DB as well
-            AddExpenseButton { expenses.add(Expense(inputExpenseName.value, inputExpenseCost.value.toDouble())) }
+            AddExpenseButton {
+                expenses.add(Expense(inputExpenseName.value, inputExpenseCost.value.toDouble()))
+                val newValues = ContentValues().apply {
+                    put(DbContract.ExpensesTable.COLUMN_NAME_EXPENSE_NAME, inputExpenseName.value)
+                    put(DbContract.ExpensesTable.COLUMN_NAME_COST, inputExpenseCost.value)
+                }
+                db.insert(DbContract.ExpensesTable.TABLE_NAME, null, newValues)
+            }
 
             BasicTextField(
                 value = inputExpenseName.value,
@@ -104,8 +131,13 @@ fun ExpenseList(modifier: Modifier = Modifier) {
                 textStyle = TextStyle(background = Color.Gray)
             )
         }
-        // TODO(3): remove the below expense from DB as well
-        DeleteExpenseButton { expenses.removeLast() }
+
+        DeleteExpenseButton {
+            val expenseName = expenses.last().name
+            val selection = "${DbContract.ExpensesTable.COLUMN_NAME_EXPENSE_NAME} LIKE ?"
+            db.delete(DbContract.ExpensesTable.TABLE_NAME, selection, arrayOf(expenseName))
+            expenses.removeLast()
+        }
     }
 }
 
