@@ -63,7 +63,8 @@ fun ExpenseItem(expenseName: String, cost: Double, modifier: Modifier) {
 }
 
 @Composable
-fun ExpenseList(name: String, modifier: Modifier = Modifier) {
+fun ExpenseList(modifier: Modifier = Modifier) {
+    // TODO(1): read the below expenses from DB
     val expenses = remember { mutableStateListOf(Expense("Donuts", 32.3),
         Expense("Cranberries", 42.3)
     ) }
@@ -87,6 +88,7 @@ fun ExpenseList(name: String, modifier: Modifier = Modifier) {
 
         Row (modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween) {
+            // TODO(2): persist the below expense to DB as well
             AddExpenseButton { expenses.add(Expense(inputExpenseName.value, inputExpenseCost.value.toDouble())) }
 
             BasicTextField(
@@ -103,6 +105,7 @@ fun ExpenseList(name: String, modifier: Modifier = Modifier) {
                 textStyle = TextStyle(background = Color.Gray)
             )
         }
+        // TODO(3): remove the below expense from DB as well
         DeleteExpenseButton { expenses.removeLast() }
     }
 }
