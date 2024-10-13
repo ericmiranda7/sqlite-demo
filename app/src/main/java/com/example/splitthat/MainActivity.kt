@@ -66,6 +66,8 @@ fun ExpenseList(name: String, modifier: Modifier = Modifier) {
         Expense("Cranberries", 42.3)
     ) }
 
+    // todo(2): get an instance of the database here
+
     val inputExpenseName = remember { mutableStateOf("Expense name") }
     val inputExpenseCost = remember { mutableStateOf("42") }
 
