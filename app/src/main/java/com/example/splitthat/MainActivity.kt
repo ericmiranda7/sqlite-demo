@@ -107,7 +107,6 @@ fun ExpenseList(modifier: Modifier = Modifier) {
 
         Row (modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween) {
-            // TODO(2): persist the below expense to DB as well
             AddExpenseButton {
                 expenses.add(Expense(inputExpenseName.value, inputExpenseCost.value.toDouble()))
                 val newValues = ContentValues().apply {
