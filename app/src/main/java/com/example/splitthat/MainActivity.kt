@@ -6,18 +6,28 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.splitthat.model.Expense
@@ -51,9 +61,13 @@ fun ExpenseItem(expenseName: String, cost: Double, modifier: Modifier) {
 
 @Composable
 fun ExpenseList(name: String, modifier: Modifier = Modifier) {
+    // todo(1): move the below into database
     val expenses = remember { mutableStateListOf(Expense("Donuts", 32.3),
         Expense("Cranberries", 42.3)
     ) }
+
+    val inputExpenseName = remember { mutableStateOf("Expense name") }
+    val inputExpenseCost = remember { mutableStateOf("42") }
 
     Column {
         Header(
@@ -66,7 +80,24 @@ fun ExpenseList(name: String, modifier: Modifier = Modifier) {
         }
 
 
-        AddExpenseButton { expenses.add(Expense("Example Expense", 0.0)) }
+        Row (modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween) {
+            AddExpenseButton { expenses.add(Expense(inputExpenseName.value, inputExpenseCost.value.toDouble())) }
+
+            BasicTextField(
+                value = inputExpenseName.value,
+                onValueChange = { inputExpenseName.value = it },
+                modifier = modifier.width(IntrinsicSize.Min),
+                textStyle = TextStyle(background = Color.Gray)
+            )
+
+            BasicTextField(
+                value = inputExpenseCost.value,
+                onValueChange = { inputExpenseCost.value = it },
+                modifier = modifier.width(IntrinsicSize.Min),
+                textStyle = TextStyle(background = Color.Gray)
+            )
+        }
         DeleteExpenseButton { expenses.removeLast() }
     }
 }
