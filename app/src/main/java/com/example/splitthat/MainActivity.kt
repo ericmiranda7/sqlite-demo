@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
             SplitThatTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ExpenseList(
-                        name = "Expenses",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -136,6 +135,6 @@ fun Header(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun ExpenseListPreview() {
     SplitThatTheme {
-        ExpenseList("Expenses")
+        ExpenseList()
     }
 }
