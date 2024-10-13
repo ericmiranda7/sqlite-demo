@@ -4,7 +4,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-const val CREATE_SQL = "CREATE TABLE expenses (name TEXT, cost REAL)"
+const val CREATE_SQL = "CREATE TABLE expenses (" +
+        "${DbContract.ExpensesTable.COLUMN_NAME_EXPENSE_NAME} TEXT," +
+        "${DbContract.ExpensesTable.COLUMN_NAME_COST} REAL)"
 
 class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase?) {
