@@ -1,5 +1,6 @@
 package com.example.splitthat
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,9 +28,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.splitthat.data.DbHelper
 import com.example.splitthat.model.Expense
 import com.example.splitthat.ui.theme.SplitThatTheme
 
@@ -61,12 +64,12 @@ fun ExpenseItem(expenseName: String, cost: Double, modifier: Modifier) {
 
 @Composable
 fun ExpenseList(name: String, modifier: Modifier = Modifier) {
-    // todo(1): move the below into database
     val expenses = remember { mutableStateListOf(Expense("Donuts", 32.3),
         Expense("Cranberries", 42.3)
     ) }
 
-    // todo(2): get an instance of the database here
+    val dbHelper = DbHelper(context = LocalContext.current)
+    val db = dbHelper.writableDatabase
 
     val inputExpenseName = remember { mutableStateOf("Expense name") }
     val inputExpenseCost = remember { mutableStateOf("42") }
